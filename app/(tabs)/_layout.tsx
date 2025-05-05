@@ -1,10 +1,13 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
+import { SelectedPageProvider } from '@/context/SelectedPageContext';
 
 export default function TabLayout() {
 
   return (
+    <SelectedPageProvider>
+
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -29,5 +32,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </SelectedPageProvider>
   );
 }

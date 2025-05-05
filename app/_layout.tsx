@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 import 'react-native-reanimated';
 
-import Sidebar from '@/components/Sidebar';
+import Sidebar from '../components/Sidebar';
 import { SelectedPageProvider, useSelectedPage } from '@/context/SelectedPageContext';
 import { db } from '@/firebaseConfig';
 import { collection, getDoc, getDocs, query, where } from 'firebase/firestore';
@@ -58,32 +58,30 @@ export default function RootLayout() {
   }
 
   return (
-    <SelectedPageProvider>
-      <View style={styles.container}>
-        <ThemeProvider value={DarkTheme}>
-          {loading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#0000ff" />
+    <View style={styles.container}>
+      <ThemeProvider value={DarkTheme}>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        ) : (
+          <>
+            <Sidebar pages={pages} handlePagePress={handlePagePress} />
+            <View style={styles.content}>
+                <Stack>
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              <StatusBar style="auto" />
             </View>
-          ) : (
-            <>
-              <Sidebar pages={pages} handlePagePress={handlePagePress} />
-              <View style={styles.content}>
-                  <Stack>
-                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                    <Stack.Screen name="+not-found" />
-                  </Stack>
-                <StatusBar style="auto" />
-              </View>
-            </>
-          )}
-        </ThemeProvider>
-      </View>
-    </SelectedPageProvider>
+          </>
+        )}
+      </ThemeProvider>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ 
   container: {
     flex: 1,
     flexDirection: 'row',
