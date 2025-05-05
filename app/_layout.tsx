@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, ActivityIndicator } from 'react-native';
 import 'react-native-reanimated';
 //import { db } from '../firebaseConfig.js'; // Import db from your config file
-import { collection, getDocs } from 'firebase/firestore'; // Import necessary Firestore functions
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore'; // Import necessary Firestore functions
 
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
@@ -45,6 +45,22 @@ export default function RootLayout() {
   });
   const [pages, setPages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPageContent, setSelectedPageContent] = useState<string[]>([]);
+
+  const handlePagePress = async (pageName: string) => {
+    try {
+      const pageDocRef = doc(db, 'pages', pageName); // Reference to the specific document
+      const pageSnapshot = await getDoc(pageDocRef);
+
+      if (pageSnapshot.exists()) {
+        setSelectedPageContent(pageSnapshot.data().content || []); // Update with the content array or empty array if it does not exist.
+      } else {
+        console.log('Document does not exist!');
+      }
+    } catch (error) {
+      console.error('Error fetching page content:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchPages = async () => {
@@ -78,10 +94,10 @@ export default function RootLayout() {
           </View>
         ) : (
           <>
-            <Sidebar pages={pages} />
+            <Sidebar pages={pages} handlePagePress={handlePagePress}/>
             <View style={styles.content}>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack screenOptions={{ selectedPageContent }}>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
                 <Stack.Screen name="+not-found" />
               </Stack>
               <StatusBar style="auto" />
