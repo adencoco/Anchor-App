@@ -5,13 +5,12 @@ import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 import 'react-native-reanimated';
 
-import Sidebar from '../components/Sidebar';
-import { SelectedPageProvider, useSelectedPage } from '@/context/SelectedPageContext';
+import Sidebar from '@/components/Sidebar';
 import { db } from '@/firebaseConfig';
 import { collection, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-
+import { useNavigation } from 'expo-router';
 export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -19,7 +18,6 @@ export default function RootLayout() {
   const [pages, setPages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { setSelectedPageContent } = useSelectedPage();
-
   const handlePagePress = async (pageName: string) => {
     try {
       const pagesCollectionRef = collection(db, 'pages');
@@ -57,28 +55,28 @@ export default function RootLayout() {
     return null;
   }
 
-  return (
-    <View style={styles.container}>
-      <ThemeProvider value={DarkTheme}>
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#0000ff" />
-          </View>
-        ) : (
-          <>
-            <Sidebar pages={pages} handlePagePress={handlePagePress} />
-            <View style={styles.content}>
-                <Stack>
-                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-              <StatusBar style="auto" />
+    return (
+      <View style={styles.container}>
+        <ThemeProvider value={DarkTheme}>
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#0000ff" />
             </View>
-          </>
-        )}
-      </ThemeProvider>
-    </View>
-  );
+          ) : (
+            <>
+              <Sidebar pages={pages} handlePagePress={handlePagePress} />
+              <View style={styles.content}>
+                  <Stack>
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                <StatusBar style="auto" />
+              </View>
+            </>
+          )}
+        </ThemeProvider>
+      </View>
+    );
 }
 
 const styles = StyleSheet.create({ 
